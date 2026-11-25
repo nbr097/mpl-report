@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en-AU">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="theme-color" content="#F2F2F7" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta name="description" content="Turn an Inventory Report PDF into a printable QR scan list of items at or below MPL.">
+  <title>MPL Scan</title>
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/src/style.css">
+</head>
+<body>
+  <div id="app" class="app">
+    <nav class="nav" aria-label="Main">
+      <div class="nav-inner">
+        <a class="brand" href="/" aria-label="MPL Scan home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="4" y="4" width="6" height="6" rx="1"/><rect x="14" y="4" width="6" height="6" rx="1"/><rect x="4" y="14" width="6" height="6" rx="1"/><path d="M14 14h2v2M20 14v6h-6"/></svg>
+          </span>
+          MPL Scan
+        </a>
+        <div class="nav-actions">
+          <button id="themeBtn" class="capsule capsule-grey" type="button" aria-label="Appearance">
+            <span id="themeIcon" aria-hidden="true"></span><span id="themeLabel">Auto</span>
+          </button>
+          <button id="viewBtn" class="capsule capsule-grey" type="button" hidden>List View</button>
+          <button id="printBtn" class="capsule capsule-blue" type="button" hidden>
+            <svg aria-hidden="true" viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="7" rx="1"/></svg>
+            Print
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <main class="main" id="main">
+      <!-- Empty state -->
+      <section id="empty" class="empty">
+        <label class="drop drop-hero" id="dropHero">
+          <svg aria-hidden="true" class="drop-icon" viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 18v-6M9 15l3-3 3 3"/></svg>
+          <span class="drop-title">Drop your Inventory Report PDF</span>
+          <span class="drop-sub">Items with stock on hand at or below MPL become a printable QR scan list. Items with no stock are left off.</span>
+          <span class="capsule capsule-blue drop-btn">Choose File</span>
+          <span class="drop-note">Your PDF stays on this device. Nothing is uploaded.</span>
+          <input id="fileInput" type="file" accept="application/pdf,.pdf" multiple class="visually-hidden">
+        </label>
+      </section>
+
+      <!-- Loaded state -->
+      <section id="loaded" hidden>
+        <div class="summary">
+          <label class="drop drop-tile" id="dropTile">
+            <svg aria-hidden="true" class="drop-icon" viewBox="0 0 24 24" width="34" height="34" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 18v-6M9 15l3-3 3 3"/></svg>
+            <span class="drop-file" id="fileName"></span>
+            <span class="drop-meta" id="fileMeta"></span>
+            <input id="fileInput2" type="file" accept="application/pdf,.pdf" multiple class="visually-hidden">
+          </label>
+          <div class="widget widget-blue">
+            <span class="widget-label">To scan</span>
+            <span class="widget-num" id="countScan">0</span>
+            <span class="widget-foot">SOH at or below MPL</span>
+          </div>
+          <div class="widget">
+            <span class="widget-label">Checked</span>
+            <span class="widget-num" id="countAll">0</span>
+            <span class="widget-foot" id="countSkip"></span>
+          </div>
+        </div>
+
+        <div class="toolbar">
+          <label class="search">
+            <svg aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+            <input id="search" type="search" placeholder="Search article or description" aria-label="Search article or description">
+          </label>
+          <div class="field">
+            <label for="sort">Sort</label>
+            <select id="sort">
+              <option value="report">Report order</option>
+              <option value="soh">Lowest SOH first</option>
+              <option value="article">Article number</option>
+              <option value="desc">Description</option>
+            </select>
+          </div>
+          <div class="field">
+            <span id="layoutLabel">Print layout</span>
+            <div class="segmented" role="radiogroup" aria-labelledby="layoutLabel" id="layoutSeg">
+              <button type="button" role="radio" data-v="grid">Grid</button>
+              <button type="button" role="radio" data-v="list">List</button>
+              <button type="button" role="radio" data-v="labels">Labels</button>
+            </div>
+          </div>
+          <div class="field">
+            <span id="sizeLabel">QR size</span>
+            <div class="segmented" role="radiogroup" aria-labelledby="sizeLabel" id="sizeSeg">
+              <button type="button" role="radio" data-v="S">S</button>
+              <button type="button" role="radio" data-v="M">M</button>
+              <button type="button" role="radio" data-v="L">L</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="hint" id="hint">Tap a card to leave it off the printout.</p>
+        <div id="sections"></div>
+      </section>
+
+      <div id="error" class="error" role="alert" hidden></div>
+    </main>
+
+    <div id="dragOverlay" class="drag-overlay" hidden aria-hidden="true">
+      <div class="drag-overlay-inner">Drop to load report</div>
+    </div>
+    <div id="busy" class="busy" hidden role="status" aria-live="polite">Reading PDF…</div>
+  </div>
+
+  <div id="printRoot" class="print-root" aria-hidden="true"></div>
+
+  <script type="module" src="/src/main.js"></script>
+</body>
+</html>

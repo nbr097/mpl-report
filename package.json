@@ -1,0 +1,21 @@
+{
+  "name": "mpl-scan",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Turn Inventory Report PDFs into printable QR scan lists (SOH at or below MPL).",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "pdfjs-dist": "^4.10.38",
+    "qrcode-generator": "^2.0.4"
+  },
+  "devDependencies": {
+    "vite": "^6.4.6",
+    "vitest": "^3.2.7"
+  }
+}
