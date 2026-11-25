@@ -23,7 +23,13 @@ npm test         # parser tests against test/fixtures/globes-inventory-report.pd
 npm run build    # outputs dist/
 ```
 
-## Deploy to Cloudflare Pages
+## Deploy to Cloudflare
+**Workers (recommended, uses `wrangler.jsonc`)**
+1. Workers & Pages → your Worker → Settings → Build → Connect to the GitHub repo.
+2. Build command: leave empty. Deploy command: `npx wrangler deploy`. Root directory: `/`.
+3. Settings → Domains & Routes → Add → Custom domain → `mpl.nicholasbrown.me`.
+
+### Or Cloudflare Pages
 **Option A: Git integration (redeploys automatically on push)**
 1. Push this repo to GitHub.
 2. Cloudflare dashboard → Workers & Pages → Create → Pages → Connect to Git → choose the repo.
